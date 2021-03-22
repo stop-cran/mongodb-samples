@@ -13,18 +13,16 @@ namespace WebApplication1
     {
         private readonly CancellationTokenSource loopCancellation = new CancellationTokenSource();
         private readonly ILogger<LogFlushService> logger;
-        private Task? loop;
+        private Task loop = Task.CompletedTask;
 
         public LogFlushService(ILogger<LogFlushService> logger)
         {
             this.logger = logger;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             loop = Loop(loopCancellation.Token);
-
-            return Task.CompletedTask;
         }
 
         private async Task Loop(CancellationToken cancellationToken)
@@ -48,7 +46,7 @@ namespace WebApplication1
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unexpected error flushing logs.");
+                logger.LogError(ex, "Error flushing logs");
             }
         }
 

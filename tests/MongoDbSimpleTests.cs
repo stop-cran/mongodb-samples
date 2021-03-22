@@ -6,10 +6,11 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
 using Shouldly;
+using WebApplication1;
 
 namespace MongoDbSamples
 {
-    public class Tests
+    public class MongoDbSimpleTests
     {
         private IMongoClient mongoClient;
         private IMongoCollection<TestLogEvent> logEvents;

@@ -18,8 +18,10 @@ namespace WebApplication1
         // For testing
         public static CancellationToken RunCancellation { get; set; } = CancellationToken.None;
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(params string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, configBuilder) =>
+                    configBuilder.AddJsonFile("Environment/appsettings.json", false, false))
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
     }
 }
