@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Fody;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
@@ -10,7 +9,6 @@ using Shouldly;
 
 namespace MongoDbSamples
 {
-    [ConfigureAwait(false)]
     public class Tests
     {
         private IMongoClient mongoClient;
