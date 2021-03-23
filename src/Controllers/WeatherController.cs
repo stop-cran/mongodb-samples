@@ -8,15 +8,17 @@ namespace WebApplication1.Controllers
 {
     public class WeatherController : Controller
     {
-        private readonly IWeatherRepository weatherRepository;
-        
+        private readonly IWeatherRepository _weatherRepository;
+
         public WeatherController(IWeatherRepository weatherRepository)
         {
-            this.weatherRepository = weatherRepository;
+            _weatherRepository = weatherRepository;
         }
 
         [HttpGet("weather")]
-        public async Task<List<WeatherDto>> Get(string location, CancellationToken cancellationToken) =>
-            await weatherRepository.GetByLocation(location, cancellationToken);
+        public async Task<List<WeatherDto>> Get(string location, CancellationToken cancellationToken)
+        {
+            return await _weatherRepository.GetByLocation(location, cancellationToken);
+        }
     }
 }

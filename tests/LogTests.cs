@@ -3,11 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nest;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using Shouldly;
-using WebApplication1;
 
-namespace MongoDbSamples
+namespace WebApplication1.Tests
 {
     public class LogTests
     {
@@ -18,10 +16,10 @@ namespace MongoDbSamples
         public void Setup()
         {
             var connectionSettings = new ConnectionSettings(new Uri("http://localhost:9200"));
-            
+
             elasticClient = new ElasticClient(connectionSettings);
             cancel = new CancellationTokenSource(1000);
-            
+
             Program.RunCancellation = cancel.Token;
         }
 
@@ -48,7 +46,7 @@ namespace MongoDbSamples
                 .QueryOnQueryString("application"));
 
             search.Documents.ShouldNotBeEmpty();
-            
+
             foreach (var document in search.Documents)
                 await TestContext.Out.WriteLineAsync("Found log record:" + document.Message);
         }

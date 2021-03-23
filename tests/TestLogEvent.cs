@@ -1,10 +1,11 @@
 using System;
+using MongoDB.Bson;
 
-namespace MongoDbSamples
+namespace WebApplication1.Tests
 {
     public class TestLogEvent
     {
-        public MongoDB.Bson.ObjectId Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Level { get; set; }
         public string Message { get; set; }
 

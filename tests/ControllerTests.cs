@@ -6,15 +6,14 @@ using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using NUnit.Framework;
 using Shouldly;
-using WebApplication1;
 using WebApplication1.Controllers;
 
-namespace MongoDbSamples
+namespace WebApplication1.Tests
 {
     public class ControllerTests
     {
-        private IHost host;
         private CancellationTokenSource cancel;
+        private IHost host;
 
 
         [SetUp]
@@ -62,7 +61,7 @@ namespace MongoDbSamples
             var controller = host.Services.GetRequiredService<WeatherController>();
 
             var weather = await controller.Get("Moscow", cancel.Token);
-            
+
             weather.ShouldNotBeEmpty();
         }
     }

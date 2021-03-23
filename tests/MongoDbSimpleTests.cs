@@ -6,15 +6,14 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
 using Shouldly;
-using WebApplication1;
 
-namespace MongoDbSamples
+namespace WebApplication1.Tests
 {
     public class MongoDbSimpleTests
     {
-        private IMongoClient mongoClient;
-        private IMongoCollection<TestLogEvent> logEvents;
         private CancellationTokenSource cancel;
+        private IMongoCollection<TestLogEvent> logEvents;
+        private IMongoClient mongoClient;
 
 
         [SetUp]
@@ -34,7 +33,8 @@ namespace MongoDbSamples
             cancel.Dispose();
         }
 
-        private async Task InsertTestItems() =>
+        private async Task InsertTestItems()
+        {
             await logEvents.InsertManyAsync(
                 new[]
                 {
@@ -57,6 +57,7 @@ namespace MongoDbSamples
                         TimeStamp = DateTime.Now.AddYears(-1)
                     }
                 }, cancellationToken: cancel.Token);
+        }
 
         [Test]
         public async Task ShouldAggregate()
@@ -81,7 +82,7 @@ namespace MongoDbSamples
         public async Task ShouldMapReduce()
         {
             await InsertTestItems();
-            
+
             var cursor = await logEvents.MapReduceAsync(
                 @"function mapYear() {
                     if (this.Level === 'ERROR')
