@@ -10,7 +10,7 @@ using WebApplication1.Controllers;
 
 namespace WebApplication1.Tests
 {
-    public class ControllerTests
+    public class WeatherControllerTests
     {
         private CancellationTokenSource cancel;
         private IHost host;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using RedLockNet;
+using RedLockNet.SERedis;
+using RedLockNet.SERedis.Configuration;
+using StackExchange.Redis;
 using WebApplication1.Repositories;
 
 namespace WebApplication1
@@ -37,6 +42,15 @@ namespace WebApplication1
             services.AddControllers();
 
             services.AddTransient<IWeatherRepository, MongoDbWeatherRepository>();
+            services.AddTransient<IUniqueResource, UniqueResource>();
+
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                    ConnectionMultiplexer.Connect(Configuration["Redis:Configuration"]))
+                .AddSingleton<IDistributedLockFactory>(serviceProvider =>
+                    RedLockFactory.Create(new List<RedLockMultiplexer>
+                    {
+                        new(serviceProvider.GetRequiredService<IConnectionMultiplexer>())
+                    }));
 
             services
                 .AddLogging(loggingBuilder =>

@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using StackExchange.Redis;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
+using RedLockNet.SERedis;
+using RedLockNet.SERedis.Configuration;
 using Shouldly;
 
 namespace WebApplication1.Tests
@@ -97,6 +103,54 @@ namespace WebApplication1.Tests
             listMembers2.Length.ShouldBe(2);
             rightItem.HasValue.ShouldBeTrue();
             rightItem.ToString().ShouldBe(value + 2);
+        }
+        
+        
+        [Test]
+        [TestCase("SomeKey", "SomeValue")]
+        public async Task ShouldExpire(string key, string value)
+        {
+            // Given
+            await _db.KeyDeleteAsync(key);
+            var setResult = await _db.StringSetAsync(key, value);
+            var expire = await _db.KeyExpireAsync(key, DateTime.Now.AddMilliseconds(500));
+            var getResult1 = await _db.StringGetAsync(key);
+
+            // When
+            await Task.Delay(1500);
+            
+            var getResult2 = await _db.StringGetAsync(key);
+
+            // Then
+            setResult.ShouldBeTrue();
+            expire.ShouldBeTrue();
+            getResult1.HasValue.ShouldBeTrue();
+            getResult2.HasValue.ShouldBeFalse();
+        }
+
+        [Test]
+        [TestCase("SomeKey", "SomeValue")]
+        public async Task ShouldLock(string key, string value)
+        {
+            using var redlockFactory = RedLockFactory.Create(new List<RedLockMultiplexer>
+            {
+                new(_connectionMultiplexer)
+            });
+
+            async Task<bool> ResourceLockFunc()
+            {
+                using var resourceLock = await redlockFactory.CreateLockAsync(key, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1),_cancel.Token);
+
+                bool result = resourceLock.IsAcquired;
+
+                await Task.Delay(3000);
+
+                return result;
+            }
+
+            var results = await Task.WhenAll(ResourceLockFunc(), ResourceLockFunc());
+
+            results.Where(b => b).ShouldHaveSingleItem();
         }
     }
 }
