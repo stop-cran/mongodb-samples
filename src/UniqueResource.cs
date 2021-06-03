@@ -7,19 +7,20 @@ namespace WebApplication1
 {
     public class UniqueResource : IUniqueResource
     {
-        private readonly IDistributedLockFactory _distributedLockFactory;
+        private readonly Task<IDistributedLockFactory> _distributedLockFactoryTask;
 
-        public UniqueResource(IDistributedLockFactory distributedLockFactory)
+        public UniqueResource(Task<IDistributedLockFactory> distributedLockFactoryTask)
         {
-            _distributedLockFactory = distributedLockFactory;
+            _distributedLockFactoryTask = distributedLockFactoryTask;
         }
 
         public async Task Own(TimeSpan duration, CancellationToken cancellationToken)
         {
             if (duration < TimeSpan.Zero || duration > TimeSpan.FromMinutes(1))
                 throw new ArgumentOutOfRangeException(nameof(duration));
-            
-            using var distributedLock = await _distributedLockFactory.CreateLockAsync(
+
+            var distributedLockFactory = await _distributedLockFactoryTask;
+            using var distributedLock = await distributedLockFactory.CreateLockAsync(
                 "UniqueResource",
                 duration,
                 TimeSpan.MaxValue,

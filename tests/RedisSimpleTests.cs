@@ -140,7 +140,7 @@ namespace WebApplication1.Tests
             async Task<bool> ResourceLockFunc()
             {
                 using var resourceLock = await redlockFactory.CreateLockAsync(key, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1),_cancel.Token);
-
+                
                 bool result = resourceLock.IsAcquired;
 
                 await Task.Delay(3000);

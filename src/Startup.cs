@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,16 +41,16 @@ namespace WebApplication1
                     serviceProvider.GetRequiredService<IMongoClient>()
                         .StartSession());
             services.AddControllers();
-
+            
             services.AddTransient<IWeatherRepository, MongoDbWeatherRepository>();
             services.AddTransient<IUniqueResource, UniqueResource>();
 
-            services.AddSingleton<IConnectionMultiplexer>(_ =>
-                    ConnectionMultiplexer.Connect(Configuration["Redis:Configuration"]))
-                .AddSingleton<IDistributedLockFactory>(serviceProvider =>
+            services.AddSingleton<Task<IConnectionMultiplexer>>(async _ =>
+                    await ConnectionMultiplexer.ConnectAsync(Configuration["Redis:Configuration"]))
+                .AddSingleton<Task<IDistributedLockFactory>>(async serviceProvider =>
                     RedLockFactory.Create(new List<RedLockMultiplexer>
                     {
-                        new(serviceProvider.GetRequiredService<IConnectionMultiplexer>())
+                        new(await serviceProvider.GetRequiredService<Task<IConnectionMultiplexer>>())
                     }));
 
             services

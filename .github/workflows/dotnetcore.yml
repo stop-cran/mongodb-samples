@@ -50,3 +50,8 @@ jobs:
           - 9200:9200
         env:
           discovery.type: single-node
+      cassandra:
+        image: cassandra
+        ports:
+          - 9042:9042
+          - 9160:9160
