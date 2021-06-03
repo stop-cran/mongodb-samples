@@ -24,9 +24,13 @@ namespace WebApplication1.Tests
             cancel = new CancellationTokenSource(10000);
 
             session = await cluster.ConnectAsync();
-            session.Execute("CREATE KEYSPACE IF NOT EXISTS uprofile WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 1 };");
-            session.Execute("USE uprofile");
-            session.Execute("CREATE TABLE IF NOT EXISTS uprofile.user (id int PRIMARY KEY, name text, city text)");
+
+            await session.ExecuteAsync(new SimpleStatement(
+                "CREATE KEYSPACE IF NOT EXISTS uprofile WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 1 };"));
+            await session.ExecuteAsync(new SimpleStatement(
+                "USE uprofile;"));
+            await session.ExecuteAsync(new SimpleStatement(
+                "CREATE TABLE IF NOT EXISTS user (id int PRIMARY KEY, name text, city text);"));
         }
 
         [TearDown]
@@ -49,16 +53,16 @@ namespace WebApplication1.Tests
         public async Task ShouldAggregate()
         {
             await InsertTestItems();
-            
+
             var mapper = new Mapper(session);
-            
+
             var users = await mapper.FetchAsync<User>("Select * from user");
             var user = await mapper.FirstOrDefaultAsync<User>("Select * from user where id = ?", 3);
 
             users.Count().ShouldBe(3);
             user.ShouldNotBeNull();
         }
-   }
+    }
 
     public class User
     {
