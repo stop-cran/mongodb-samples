@@ -55,3 +55,9 @@ jobs:
         ports:
           - 9042:9042
           - 9160:9160
+      neo4j:
+        image: neo4j
+        ports:
+          - 7687:7687
+        env:
+          NEO4J_AUTH: none

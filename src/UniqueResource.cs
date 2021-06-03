@@ -29,7 +29,7 @@ namespace WebApplication1
 
             if (!distributedLock.IsAcquired)
                 throw new ApplicationException("Failed to acquire the unique resource.");
-            
+
             await Task.Delay(duration, cancellationToken);
         }
     }

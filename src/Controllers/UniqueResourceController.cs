@@ -8,7 +8,7 @@ namespace WebApplication1.Controllers
     public class UniqueResourceController : Controller
     {
         private readonly IUniqueResource _uniqueResource;
-        
+
         public UniqueResourceController(IUniqueResource uniqueResource)
         {
             _uniqueResource = uniqueResource;

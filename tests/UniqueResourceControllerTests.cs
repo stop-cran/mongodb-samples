@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDB.Driver;
 using NUnit.Framework;
 using Shouldly;
 using WebApplication1.Controllers;
@@ -41,10 +40,10 @@ namespace WebApplication1.Tests
             var controller = host.Services.GetRequiredService<UniqueResourceController>();
 
             var result = await controller.Own(TimeSpan.FromMilliseconds(100), cancel2.Token);
-            
+
             result.ShouldBeOfType<OkObjectResult>();
         }
-        
+
         [Test]
         public async Task ShouldCancelLock()
         {
@@ -57,7 +56,7 @@ namespace WebApplication1.Tests
             await task1.ShouldThrowAsync<TaskCanceledException>();
             await task2.ShouldThrowAsync<TaskCanceledException>();
         }
-        
+
         [Test]
         public async Task ShouldLock()
         {
@@ -67,7 +66,7 @@ namespace WebApplication1.Tests
             var task1 = controller.Own(TimeSpan.FromMilliseconds(100), cancel2.Token);
             var task2 = controller.Own(TimeSpan.FromSeconds(10), cancel2.Token);
             var result1 = await task1;
-            
+
             result1.ShouldBeOfType<OkObjectResult>();
             await task2.ShouldThrowAsync<TaskCanceledException>();
         }

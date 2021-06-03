@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Cassandra;
 using Cassandra.Mapping;
-using MongoDB.Driver;
 using NUnit.Framework;
 using Shouldly;
 
@@ -12,7 +9,6 @@ namespace WebApplication1.Tests
 {
     public class CassandraSimpleTests
     {
-        private CancellationTokenSource cancel;
         private Cluster cluster;
         private ISession session;
 
@@ -21,8 +17,6 @@ namespace WebApplication1.Tests
         public async Task Setup()
         {
             cluster = Cluster.Builder().AddContactPoint("localhost").Build();
-            cancel = new CancellationTokenSource(10000);
-
             session = await cluster.ConnectAsync();
 
             await session.ExecuteAsync(new SimpleStatement(
@@ -50,7 +44,7 @@ namespace WebApplication1.Tests
         }
 
         [Test]
-        public async Task ShouldAggregate()
+        public async Task ShouldSelectUsers()
         {
             await InsertTestItems();
 

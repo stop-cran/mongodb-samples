@@ -41,7 +41,7 @@ namespace WebApplication1
                     serviceProvider.GetRequiredService<IMongoClient>()
                         .StartSession());
             services.AddControllers();
-            
+
             services.AddTransient<IWeatherRepository, MongoDbWeatherRepository>();
             services.AddTransient<IUniqueResource, UniqueResource>();
 
