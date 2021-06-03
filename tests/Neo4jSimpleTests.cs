@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
-    public class Neo4jimpleTests
+    public class Neo4jSimpleTests
     {
         private IDriver driver;
         private IAsyncSession session;
@@ -62,11 +62,5 @@ namespace WebApplication1.Tests
             result[0][0].As<string>().ShouldBe("Terminator 1");
             result[1][0].As<string>().ShouldBe("Terminator 2");
         }
-    }
-
-
-    public class Movie
-    {
-        public string Title { get; set; }
     }
 }

@@ -45,19 +45,6 @@ namespace WebApplication1.Tests
         }
 
         [Test]
-        public async Task ShouldCancelLock()
-        {
-            using var cancel2 = new CancellationTokenSource(1000);
-            var controller = host.Services.GetRequiredService<UniqueResourceController>();
-
-            var task1 = controller.Own(TimeSpan.FromSeconds(10), cancel2.Token);
-            var task2 = controller.Own(TimeSpan.FromMilliseconds(100), cancel2.Token);
-
-            await task1.ShouldThrowAsync<TaskCanceledException>();
-            await task2.ShouldThrowAsync<TaskCanceledException>();
-        }
-
-        [Test]
         public async Task ShouldLock()
         {
             using var cancel2 = new CancellationTokenSource(1000);
