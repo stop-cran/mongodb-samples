@@ -2,14 +2,15 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using RedLockNet;
+using WebApplication1.Awaitable;
 
 namespace WebApplication1
 {
     public class UniqueResource : IUniqueResource
     {
-        private readonly Task<IDistributedLockFactory> _distributedLockFactoryTask;
+        private readonly ITaskAwaitable<IDistributedLockFactory> _distributedLockFactoryTask;
 
-        public UniqueResource(Task<IDistributedLockFactory> distributedLockFactoryTask)
+        public UniqueResource(ITaskAwaitable<IDistributedLockFactory> distributedLockFactoryTask)
         {
             _distributedLockFactoryTask = distributedLockFactoryTask;
         }

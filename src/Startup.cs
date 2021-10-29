@@ -11,6 +11,7 @@ using RedLockNet;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
+using WebApplication1.Awaitable;
 using WebApplication1.Repositories;
 
 namespace WebApplication1
@@ -45,12 +46,12 @@ namespace WebApplication1
             services.AddTransient<IWeatherRepository, MongoDbWeatherRepository>();
             services.AddTransient<IUniqueResource, UniqueResource>();
 
-            services.AddSingleton<Task<IConnectionMultiplexer>>(async _ =>
+            services.AddSingletonTaskAwaitable<IConnectionMultiplexer>(async _ =>
                     await ConnectionMultiplexer.ConnectAsync(Configuration["Redis:Configuration"]))
-                .AddSingleton<Task<IDistributedLockFactory>>(async serviceProvider =>
+                .AddSingletonTaskAwaitable<IDistributedLockFactory>(async serviceProvider =>
                     RedLockFactory.Create(new List<RedLockMultiplexer>
                     {
-                        new(await serviceProvider.GetRequiredService<Task<IConnectionMultiplexer>>())
+                        new(await serviceProvider.GetRequiredService<ITaskAwaitable<IConnectionMultiplexer>>())
                     }));
 
             services
