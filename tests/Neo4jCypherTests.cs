@@ -9,6 +9,7 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
+    // docker run --rm -d -p 7687:7687 -e NEO4J_AUTH=none neo4j
     public class Neo4jCypherTests
     {
         private IGraphClient client;

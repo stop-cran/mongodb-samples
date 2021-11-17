@@ -9,6 +9,7 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
+    // docker run --rm -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=_Test123 -d mongo
     public class MongoDbSimpleTests
     {
         private CancellationTokenSource cancel;

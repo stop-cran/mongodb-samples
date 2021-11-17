@@ -11,6 +11,7 @@ using StackExchange.Redis;
 
 namespace WebApplication1.Tests
 {
+    // docker run --rm -p 6379:6379 -d redis
     public class RedisSimpleTests
     {
         private CancellationTokenSource _cancel;
