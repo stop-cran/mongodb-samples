@@ -55,6 +55,20 @@ jobs:
         ports:
           - 9042:9042
           - 9160:9160
+        options: >-
+          --health-cmd cqlsh -e "describe keyspaces"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 15
+      cassandra2:
+        image: cassandra
+        env:
+          CASSANDRA_SEEDS: cassandra
+        options: >-
+          --health-cmd cqlsh -e "describe keyspaces"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 15
       neo4j:
         image: neo4j
         ports:

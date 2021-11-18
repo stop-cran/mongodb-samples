@@ -7,8 +7,8 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
-    // docker run --network some-net --name cassandra1 -m 2g -d -p 9042:9042 -p 9160:9160 cassandra
-    // docker run --network some-net --name cassandra2 -m 2g -d -e CASSANDRA_SEEDS="172.18.0.2" cassandra
+    // docker run --network some-net -d -p 9042:9042 -p 9160:9160 cassandra
+    // docker run --network some-net -d -e CASSANDRA_SEEDS="172.18.0.2" cassandra
     // See https://issues.apache.org/jira/browse/CASSANDRA-9328
     public class CassandraConcurrencyTests
     {
@@ -25,7 +25,17 @@ namespace WebApplication1.Tests
                         .WithConsistencyLevel(ConsistencyLevel.Quorum)
                         .WithLoadBalancingPolicy(new DefaultLoadBalancingPolicy("datacenter1"))))
                 .Build();
-            session = await cluster.ConnectAsync();
+
+            for (int i = 0;; i++)
+                try
+                {
+                    session = await cluster.ConnectAsync();
+                    break;
+                }
+                catch (NoHostAvailableException)when (i < 100)
+                {
+                    await Task.Delay(1000);
+                }
 
             await session.ExecuteAsync(new SimpleStatement(
                 "CREATE KEYSPACE IF NOT EXISTS LWT_TEST with replication= { 'class' : 'SimpleStrategy', 'replication_factor' : 3 }"));
@@ -44,12 +54,21 @@ namespace WebApplication1.Tests
             cluster?.Dispose();
         }
 
-        //[Test]
+        [Test]
         public async Task ShouldThrowWriteTimeoutException()
         {
-            await session.ExecuteAsync(new SimpleStatement(
-                "INSERT INTO test(key, version) VALUES (:key, :version)",
-                "test", 0));
+            for (int i = 0;; i++)
+                try
+                {
+                    await session.ExecuteAsync(new SimpleStatement(
+                        "INSERT INTO test(key, version) VALUES (:key, :version)",
+                        "test", 0));
+                    break;
+                }
+                catch (UnavailableException)when (i < 100)
+                {
+                    await Task.Delay(1000);
+                }
 
             var selectStatement = await session.PrepareAsync("SELECT * FROM test WHERE key=:key");
             var updateStatement = await session.PrepareAsync(
@@ -57,7 +76,7 @@ namespace WebApplication1.Tests
 
             async Task Test()
             {
-                for(;;)
+                for (;;)
                 {
                     var rows = await session.ExecuteAsync(selectStatement.Bind("test"));
                     var version = rows.First().GetValue<int>("version");

@@ -18,7 +18,8 @@ namespace WebApplication1.Tests
         [SetUp]
         public async Task Setup()
         {
-            cluster = Cluster.Builder().AddContactPoint("localhost").Build();
+            cluster = Cluster.Builder().AddContactPoint("localhost")
+                .Build();
 
             for (int i = 0;; i++)
                 try
