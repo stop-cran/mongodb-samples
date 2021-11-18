@@ -9,7 +9,6 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
-    // docker run --rm -p 9042:9042 -p 9160:9160 -d cassandra
     public class CassandraSimpleTests
     {
         private Cluster cluster;
@@ -37,7 +36,7 @@ namespace WebApplication1.Tests
             await session.ExecuteAsync(new SimpleStatement(
                 "USE test;"));
             await session.ExecuteAsync(new SimpleStatement(
-                "CREATE TABLE IF NOT EXISTS user (id int PRIMARY KEY, name text, city text, roles list<text>);"));
+                "CREATE TABLE IF NOT EXISTS user (id int PRIMARY KEY, name text, city text, roles set<text>);"));
             await session.ExecuteAsync(new SimpleStatement(
                 "TRUNCATE user;"));
         }

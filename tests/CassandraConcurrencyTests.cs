@@ -7,8 +7,10 @@ using Shouldly;
 
 namespace WebApplication1.Tests
 {
-    // docker run --network some-net -d -p 9042:9042 -p 9160:9160 cassandra
-    // docker run --network some-net -d -e CASSANDRA_SEEDS="172.18.0.2" cassandra
+    // docker network create some-net
+    // docker run --network some-net --name=cassandra1 -d -p 9042:9042 -p 9160:9160 cassandra
+    // docker run --network some-net --name=cassandra2 -d -e CASSANDRA_SEEDS="cassandra1" cassandra
+    // docker exec -it cassandra1 nodetool status
     // See https://issues.apache.org/jira/browse/CASSANDRA-9328
     public class CassandraConcurrencyTests
     {

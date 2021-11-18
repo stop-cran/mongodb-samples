@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Cassandra;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +13,7 @@ using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
 using WebApplication1.Awaitable;
 using WebApplication1.Repositories;
+using ICluster = MongoDB.Driver.Core.Clusters.ICluster;
 
 namespace WebApplication1
 {
@@ -53,6 +54,13 @@ namespace WebApplication1
                     {
                         new(await serviceProvider.GetRequiredService<ITaskAwaitable<IConnectionMultiplexer>>())
                     }));
+
+            services.AddSingleton<Cassandra.ICluster>(_ =>
+                    Cluster.Builder()
+                        .AddContactPoint(Configuration["Cassandra:Host"])
+                        .Build())
+                .AddScopedTaskAwaitable(async serviceProvider =>
+                    await serviceProvider.GetRequiredService<Cassandra.ICluster>().ConnectAsync());
 
             services
                 .AddLogging(loggingBuilder =>

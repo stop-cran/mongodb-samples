@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CassandraCSharpDriver" Version="3.17.0" />
       <PackageReference Include="log4net.ElasticSearch" Version="2.5.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.0" />
       <PackageReference Include="MongoDB.Driver" Version="2.12.0" />
