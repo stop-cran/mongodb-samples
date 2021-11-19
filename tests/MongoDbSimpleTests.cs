@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using NUnit.Framework;
@@ -58,6 +59,109 @@ namespace WebApplication1.Tests
                         TimeStamp = DateTime.Now.AddYears(-1)
                     }
                 }, cancellationToken: cancel.Token);
+        }
+
+        [Test]
+        public async Task ShouldCreateIndex()
+        {
+            var db = mongoClient.GetDatabase("test");
+            var coll = db.GetCollection<IntestA>("IndexTest");
+            var indexKeysDefinition = Builders<IntestA>.IndexKeys.Ascending(t => t.SomeB.SomeC.SomeD.SomeE.Kr89rhdeu);
+
+            await coll.Indexes.CreateOneAsync(new CreateIndexModel<IntestA>(indexKeysDefinition));
+            
+            await coll.DeleteManyAsync(_ => true);
+
+            await coll.InsertOneAsync(new IntestA
+            {
+                Name = "srghs5hw4",
+                SomeB = new IntestB
+                {
+                    Enttuu = "i8erghefge",
+                    Fds = DateTime.Parse("2011-05-15"),
+                    SomeC = new IntestC
+                    {
+                        Kd89e87 = 13245,
+                        Kfr8s7sy = "srthesrh",
+                        SomeD = new IntestD
+                        {
+                            Fer8xs = "er9fsejfs",
+                            Kf8sr = 234529,
+                            SomeE = new IntestE
+                            {
+                                FmkDhs = DateTime.Parse("2020-11-28"),
+                                Kr89rhdeu = "sersr5"
+                            }
+                        }
+                    }
+                }
+            });
+
+            await coll.InsertOneAsync(new IntestA
+            {
+                Name = "drt67gdr6yd",
+                SomeB = new IntestB
+                {
+                    Enttuu = "rt6gydcr6yhdy6",
+                    Fds = DateTime.Parse("2012-01-15"),
+                    SomeC = new IntestC
+                    {
+                        Kd89e87 = 658784,
+                        Kfr8s7sy = "cftghcfbth",
+                        SomeD = new IntestD
+                        {
+                            Fer8xs = "gfyutf7uflo",
+                            Kf8sr = 7895343,
+                            SomeE = new IntestE
+                            {
+                                FmkDhs = DateTime.Parse("2025-11-28"),
+                                Kr89rhdeu = "t8d6du"
+                            }
+                        }
+                    }
+                }
+            });
+
+            var res = await coll.FindAsync(a => a.SomeB.SomeC.SomeD.SomeE.Kr89rhdeu == "t8d6du");
+            bool b = await res.MoveNextAsync();
+
+            b.ShouldBeTrue();
+            var item = res.Current.ShouldHaveSingleItem();
+            item.SomeB.SomeC.SomeD.SomeE.FmkDhs.Year.ShouldBe(2025);
+        }
+
+        private class IntestA
+        {
+            public ObjectId Id { get; set; }
+            public string Name { get; set; }
+            public IntestB SomeB { get; set; }
+        }
+
+        private class IntestB
+        {
+            public string Enttuu { get; set; }
+            public DateTime Fds { get; set; }
+            public IntestC SomeC { get; set; }
+        }
+
+        private class IntestC
+        {
+            public string Kfr8s7sy { get; set; }
+            public int Kd89e87 { get; set; }
+            public IntestD SomeD { get; set; }
+        }
+
+        private class IntestD
+        {
+            public string Fer8xs { get; set; }
+            public long? Kf8sr { get; set; }
+            public IntestE SomeE { get; set; }
+        }
+
+        private class IntestE
+        {
+            public string Kr89rhdeu { get; set; }
+            public DateTime FmkDhs { get; set; }
         }
 
         [Test]
