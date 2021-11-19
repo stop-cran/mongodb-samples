@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using NUnit.Framework;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
@@ -149,6 +150,40 @@ namespace WebApplication1.Tests
             var results = await Task.WhenAll(ResourceLockFunc(), ResourceLockFunc());
 
             results.Where(b => b).ShouldHaveSingleItem();
+        }
+
+
+        [Test]
+        [TestCase("h")]
+        public async Task ShouldExecuteTransaction(string key)
+        {
+            await _db.KeyDeleteAsync(key);
+            await _db.HashSetAsync(key, "x", 1);
+            await _db.HashDeleteAsync(key, "x");
+
+            async Task<bool> Transaction(int i)
+            {
+                for (string hashKey = "test";; hashKey += "_x")
+                {
+                    var tr = _db.CreateTransaction();
+                    
+                    tr.AddCondition(Condition.HashNotExists(key, hashKey));
+
+                    var task = tr.HashSetAsync(key, hashKey, i);
+
+                    if (await tr.ExecuteAsync())
+                        return await task;
+                }
+            }
+
+            var results = await Task.WhenAll(Enumerable.Range(0, 10).Select(Transaction));
+
+            results.ShouldAllBe(b => b);
+
+            var hash = _db.HashGetAll(key);
+
+            hash.Length.ShouldBe(10);
+            hash.Select(h => h.Value).Distinct().Count().ShouldBe(10);
         }
     }
 }
